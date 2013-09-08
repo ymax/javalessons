@@ -19,6 +19,8 @@ public class Main {
                      * у последнего элемента */
                     cmdArgs[cmdArgs.length - 1] = cmdArgs[cmdArgs.length - 1].trim();
                     if (cmdArgs[0].equals("PUSH")) {
+                        if (cmdArgs.length < 2)
+                            throw new IllegalArgumentException("No argument for PUSH");
                         try {
                             dataStack.push(new Double(cmdArgs[1]));
                         }
@@ -30,30 +32,46 @@ public class Main {
                         }
                     }
                     else if (cmdArgs[0].equals("POP")) {
+                        if (dataStack.size() < 1)
+                            throw new IllegalArgumentException("No argument for POP");
                         dataStack.pop();
                     }
                     else if (cmdArgs[0].equals("#")) {
                         // do nothing
                     }
                     else if (cmdArgs[0].equals("DEFINE")) {
+                        if (cmdArgs.length < 3)
+                            throw new IllegalArgumentException("No argument for DEFINE");
                         defines.put(cmdArgs[1], new Double(cmdArgs[2]));
                     }
                     else if (cmdArgs[0].equals("PRINT")) {
+                        if (dataStack.size() < 1)
+                            throw new IllegalArgumentException("No argument for PRINT");
                         System.out.println(dataStack.firstElement());
                     }
                     else if (cmdArgs[0].equals("ADD")) {
+                        if (dataStack.size() < 2)
+                            throw new IllegalArgumentException("No argument for ADD");
                         dataStack.push(dataStack.pop() + dataStack.pop());
                     }
                     else if (cmdArgs[0].equals("SUB")) {
+                        if (dataStack.size() < 2)
+                            throw new IllegalArgumentException("No argument for SUB");
                         dataStack.push(-dataStack.pop() + dataStack.pop());
                     }
                     else if (cmdArgs[0].equals("MUL")) {
+                        if (dataStack.size() < 2)
+                            throw new IllegalArgumentException("No argument for MUL");
                         dataStack.push(dataStack.pop() * dataStack.pop());
                     }
                     else if (cmdArgs[0].equals("DIV")) {
+                        if (dataStack.size() < 2)
+                            throw new IllegalArgumentException("No argument for DIV");
                         dataStack.push(1 / dataStack.pop() * dataStack.pop());
                     }
                     else if (cmdArgs[0].equals("SQRT")) {
+                        if (dataStack.size() < 1)
+                            throw new IllegalArgumentException("No argument for SQRT");
                         dataStack.push(Math.sqrt(dataStack.pop()));
                     }
                 }
