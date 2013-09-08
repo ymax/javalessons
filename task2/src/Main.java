@@ -34,7 +34,7 @@ public class Main {
                         dataStack.pop();
                     }
                     else if (cmdArgs[0].equals("#")) {
-                        continue;
+                        // do nothing
                     }
                     else if (cmdArgs[0].equals("DEFINE")) {
                         defines.put(cmdArgs[1], new Double(cmdArgs[2]));
