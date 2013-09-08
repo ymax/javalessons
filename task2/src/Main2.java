@@ -93,16 +93,8 @@ public class Main2 {
         HashMap<String, Double> defines = new HashMap<String, Double>();
 
         HashMap<String, CalcCommand> cmds = new HashMap<String, CalcCommand>();
-        cmds.put("PUSH", new PushCommand());
-        cmds.put("POP", new PopCommand());
-        cmds.put("#", new CommentCommand());
-        cmds.put("DEFINE", new DefineCommand());
-        cmds.put("PRINT", new PrintCommand());
-        cmds.put("ADD", new AddCommand());
-        cmds.put("SUB", new SubCommand());
-        cmds.put("MUL", new MulCommand());
-        cmds.put("DIV", new DivCommand());
-        cmds.put("SQRT", new SqrtCommand());
+
+        initCommands(cmds);
 
         try {
             Scanner sc = new Scanner(new File(args[0]));
@@ -121,5 +113,18 @@ public class Main2 {
         catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private static void initCommands(HashMap<String, CalcCommand> cmds) {
+        cmds.put("PUSH", new PushCommand());
+        cmds.put("POP", new PopCommand());
+        cmds.put("#", new CommentCommand());
+        cmds.put("DEFINE", new DefineCommand());
+        cmds.put("PRINT", new PrintCommand());
+        cmds.put("ADD", new AddCommand());
+        cmds.put("SUB", new SubCommand());
+        cmds.put("MUL", new MulCommand());
+        cmds.put("DIV", new DivCommand());
+        cmds.put("SQRT", new SqrtCommand());
     }
 }

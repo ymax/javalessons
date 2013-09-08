@@ -14,6 +14,29 @@ public class Main3 {
         HashMap<String, Double> defines = new HashMap<String, Double>();
 
         HashMap<String, CalcCommand2> cmds = new HashMap<String, CalcCommand2>();
+
+        initCommands(cmds);
+
+        try {
+            Scanner sc = new Scanner(new File(args[0]));
+            sc.useDelimiter("\n");
+            while (sc.hasNext()) {
+                String s = sc.next();
+                String []cmdArgs = s.split(" ");
+                if (cmdArgs.length > 0) {
+                    /** разбивка по \n поэтому нужно этот \n отрезать
+                     * у последнего элемента */
+                    cmdArgs[cmdArgs.length - 1] = cmdArgs[cmdArgs.length - 1].trim();
+                    cmds.get(cmdArgs[0]).Execute(cmdArgs, dataStack, defines);
+                }
+            }
+        }
+        catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void initCommands(HashMap<String, CalcCommand2> cmds) {
         cmds.put("PUSH", new CalcCommand2() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
@@ -82,24 +105,5 @@ public class Main3 {
                 dataStack.push(Math.sqrt(dataStack.pop()));
             }
         });
-
-
-        try {
-            Scanner sc = new Scanner(new File(args[0]));
-            sc.useDelimiter("\n");
-            while (sc.hasNext()) {
-                String s = sc.next();
-                String []cmdArgs = s.split(" ");
-                if (cmdArgs.length > 0) {
-                    /** разбивка по \n поэтому нужно этот \n отрезать
-                     * у последнего элемента */
-                    cmdArgs[cmdArgs.length - 1] = cmdArgs[cmdArgs.length - 1].trim();
-                    cmds.get(cmdArgs[0]).Execute(cmdArgs, dataStack, defines);
-                }
-            }
-        }
-        catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }
