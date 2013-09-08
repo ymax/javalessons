@@ -4,16 +4,13 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
 
-interface CalcCommand2 {
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines);
-}
 
 public class Main3 {
     public static void main(String args[]) {
         Stack<Double> dataStack = new Stack<Double>();
         HashMap<String, Double> defines = new HashMap<String, Double>();
 
-        HashMap<String, CalcCommand2> cmds = new HashMap<String, CalcCommand2>();
+        HashMap<String, CalcCommand> cmds = new HashMap<String, CalcCommand>();
 
         initCommands(cmds);
 
@@ -36,8 +33,8 @@ public class Main3 {
         }
     }
 
-    private static void initCommands(HashMap<String, CalcCommand2> cmds) {
-        cmds.put("PUSH", new CalcCommand2() {
+    private static void initCommands(HashMap<String, CalcCommand> cmds) {
+        cmds.put("PUSH", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 try {
@@ -51,55 +48,55 @@ public class Main3 {
                 }
             }
         });
-        cmds.put("POP", new CalcCommand2() {
+        cmds.put("POP", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 dataStack.pop();
             }
         });
-        cmds.put("#", new CalcCommand2() {
+        cmds.put("#", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 // do nothing
             }
         });
-        cmds.put("DEFINE", new CalcCommand2() {
+        cmds.put("DEFINE", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 defines.put(args[1], new Double(args[2]));
             }
         });
-        cmds.put("PRINT", new CalcCommand2() {
+        cmds.put("PRINT", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 System.out.println(dataStack.firstElement());
             }
         });
-        cmds.put("ADD", new CalcCommand2() {
+        cmds.put("ADD", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 dataStack.push(dataStack.pop() + dataStack.pop());
             }
         });
-        cmds.put("SUB", new CalcCommand2() {
+        cmds.put("SUB", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 dataStack.push(-dataStack.pop() + dataStack.pop());
             }
         });
-        cmds.put("MUL", new CalcCommand2() {
+        cmds.put("MUL", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 dataStack.push(dataStack.pop() * dataStack.pop());
             }
         });
-        cmds.put("DIV", new CalcCommand2() {
+        cmds.put("DIV", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 dataStack.push(1 / dataStack.pop() * dataStack.pop());
             }
         });
-        cmds.put("SQRT", new CalcCommand2() {
+        cmds.put("SQRT", new CalcCommand() {
             @Override
             public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
                 dataStack.push(Math.sqrt(dataStack.pop()));

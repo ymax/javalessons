@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
 
-interface CalcCommand {
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines);
-}
-
 class PushCommand implements CalcCommand {
     @Override
     public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
