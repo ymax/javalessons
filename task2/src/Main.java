@@ -11,9 +11,8 @@ public class Main {
 
         try {
             Scanner sc = new Scanner(new File(args[0]));
-            sc.useDelimiter("\n");
-            while (sc.hasNext()) {
-                String s = sc.next();
+            while (sc.hasNextLine()) {
+                String s = sc.nextLine();
                 String []cmdArgs = s.split(" ");
                 if (cmdArgs.length > 0) {
                     /** разбивка по \n поэтому нужно этот \n отрезать
@@ -59,6 +58,7 @@ public class Main {
                     }
                 }
             }
+            sc.close();
         }
         catch (FileNotFoundException e) {
             System.out.println(e.getMessage());

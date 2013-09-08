@@ -6,7 +6,7 @@ import java.util.Stack;
 
 class PushCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         try {
             dataStack.push(new Double(args[1]));
         }
@@ -21,63 +21,63 @@ class PushCommand implements CalcCommand {
 
 class PopCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         dataStack.pop();
     }
 }
 
 class CommentCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         // do nothing
     }
 }
 
 class DefineCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         defines.put(args[1], new Double(args[2]));
     }
 }
 
 class PrintCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         System.out.println(dataStack.firstElement());
     }
 }
 
 class AddCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         dataStack.push(dataStack.pop() + dataStack.pop());
     }
 }
 
 class SubCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         dataStack.push(-dataStack.pop() + dataStack.pop());
     }
 }
 
 class MulCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         dataStack.push(dataStack.pop() * dataStack.pop());
     }
 }
 
 class DivCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         dataStack.push(1 / dataStack.pop() * dataStack.pop());
     }
 }
 
 class SqrtCommand implements CalcCommand {
     @Override
-    public void Execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
+    public void execute(String[] args, Stack<Double> dataStack, HashMap<String, Double> defines) {
         dataStack.push(Math.sqrt(dataStack.pop()));
     }
 }
@@ -94,17 +94,17 @@ public class Main2 {
 
         try {
             Scanner sc = new Scanner(new File(args[0]));
-            sc.useDelimiter("\n");
-            while (sc.hasNext()) {
-                String s = sc.next();
+            while (sc.hasNextLine()) {
+                String s = sc.nextLine();
                 String []cmdArgs = s.split(" ");
                 if (cmdArgs.length > 0) {
                     /** разбивка по \n поэтому нужно этот \n отрезать
                      * у последнего элемента */
                     cmdArgs[cmdArgs.length - 1] = cmdArgs[cmdArgs.length - 1].trim();
-                    cmds.get(cmdArgs[0]).Execute(cmdArgs, dataStack, defines);
+                    cmds.get(cmdArgs[0]).execute(cmdArgs, dataStack, defines);
                 }
             }
+            sc.close();
         }
         catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
