@@ -4,7 +4,7 @@ import java.util.*;
 class WordCounter implements Comparable {
     @Override
     public int compareTo(Object o) {
-        return Integer.compare(val, ((WordCounter)o).val);
+        return Integer.compare(val, ((WordCounter) o).val);
     }
 
     public WordCounter(String key, int val) {
@@ -35,9 +35,8 @@ public class Main {
             try {
                 for (int ch = r.read(); ch != -1; ch = r.read()) {
                     if (Character.isLetterOrDigit(ch)) {
-                        sb.append((char)ch);
-                    }
-                    else {
+                        sb.append((char) ch);
+                    } else {
                         s = sb.toString();
 
                         if (!s.isEmpty()) {
@@ -61,13 +60,10 @@ public class Main {
                     ++count;
                     words.put(s, count);
                 }
+            } finally {
+                r.close();
+                processResults(words);
             }
-            catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
-
-            r.close();
-            processResults(words);
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -77,7 +73,7 @@ public class Main {
     private static void processResults(HashMap<String, Integer> words) {
         ArrayList<WordCounter> list = new ArrayList<WordCounter>();
         int total = 0;
-        for (Iterator<Map.Entry<String, Integer>> it = words.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<String, Integer>> it = words.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, Integer> e = it.next();
             list.add(new WordCounter(e.getKey(), e.getValue()));
             total += e.getValue();
@@ -90,15 +86,13 @@ public class Main {
             Writer fw = new FileWriter("res.csv");
             if (total > 0) {
                 try {
-                    for (WordCounter wcount: list) {
-                        fw.write(wcount.getKey() + "," + wcount.getVal() + "," + (wcount.getVal() / total * 100)+"\n");
+                    for (WordCounter wcount : list) {
+                        fw.write(wcount.getKey() + "," + wcount.getVal() + "," + (wcount.getVal() / total * 100) + "\n");
                     }
-                }
-                catch (IOException e) {
-                    System.out.println(e.getMessage());
+                } finally {
+                    fw.close();
                 }
             }
-            fw.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
