@@ -33,7 +33,7 @@ public class Main {
             Reader r = new InputStreamReader(new BufferedInputStream(new FileInputStream(args[0])));
             for (int ch = r.read(); ch != -1; ch = r.read()) {
                 if (Character.isLetterOrDigit(ch)) {
-                    sb.append(ch);
+                    sb.append((char)ch);
                 }
                 else {
                     String s = sb.toString();
@@ -44,7 +44,9 @@ public class Main {
                             count = new Integer(0);
                         }
                         ++count;
+                        words.put(s, count);
                     }
+                    sb = new StringBuilder();
                 }
             }
             r.close();
@@ -64,11 +66,12 @@ public class Main {
         }
 
         Collections.sort(list);
+        Collections.reverse(list);
 
         try {
             Writer fw = new FileWriter("res.csv");
             for (WordCounter wcount: list) {
-                fw.write(wcount.getKey() + "," + wcount.getVal() + "," + (wcount.getVal() / total * 100));
+                fw.write(wcount.getKey() + "," + wcount.getVal() + "," + (wcount.getVal() / total * 100)+"\n");
             }
             fw.close();
         } catch (IOException e) {
