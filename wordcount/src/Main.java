@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.io.*;
 import java.util.*;
 
@@ -9,12 +7,13 @@ class WordCounter implements Comparable {
         return Integer.compare(val, ((WordCounter)o).val);
     }
 
-    public WordCounter(int val) {
+    public WordCounter(String key, int val) {
+        this.key = key;
         this.val = val;
     }
 
-    public void inc() {
-        ++val;
+    public String getKey() {
+        return key;
     }
 
     public int getVal() {
@@ -22,12 +21,13 @@ class WordCounter implements Comparable {
     }
 
     private int val;
+    private String key;
 }
 
 
 public class Main {
     public static void main(String args[]) {
-        HashMap<String, WordCounter> words = new HashMap<String, WordCounter>();
+        HashMap<String, Integer> words = new HashMap<String, Integer>();
         StringBuilder sb = new StringBuilder();
         try {
             Reader r = new InputStreamReader(new BufferedInputStream(new FileInputStream(args[0])));
@@ -39,11 +39,11 @@ public class Main {
                     String s = sb.toString();
 
                     if (!s.isEmpty()) {
-                        WordCounter count = words.get(s);
+                        Integer count = words.get(s);
                         if (count == null) {
-                            count = new WordCounter(0);
+                            count = new Integer(0);
                         }
-                        count.inc();
+                        ++count;
                     }
                 }
             }
@@ -54,13 +54,26 @@ public class Main {
         }
     }
 
-    private static void processResults(HashMap<String, WordCounter> words) {
-        ArrayList<Map.Entry<String, WordCounter>> list = new ArrayList<Map.Entry<String, WordCounter>>();
-        for (Iterator<Map.Entry<String, WordCounter>> it = words.entrySet().iterator(); it.hasNext();) {
-            list.add(it.next());
+    private static void processResults(HashMap<String, Integer> words) {
+        ArrayList<WordCounter> list = new ArrayList<WordCounter>();
+        int total = 0;
+        for (Iterator<Map.Entry<String, Integer>> it = words.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<String, Integer> e = it.next();
+            list.add(new WordCounter(e.getKey(), e.getValue()));
+            total += e.getValue();
         }
 
-        Collections.sort();
+        Collections.sort(list);
+
+        try {
+            Writer fw = new FileWriter("res.csv");
+            for (WordCounter wcount: list) {
+                fw.write(wcount.getKey() + "," + wcount.getVal() + "," + (wcount.getVal() / total * 100));
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
     }
 }
