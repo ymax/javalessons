@@ -29,28 +29,46 @@ public class Main {
     public static void main(String args[]) {
         HashMap<String, Integer> words = new HashMap<String, Integer>();
         StringBuilder sb = new StringBuilder();
+        String s;
         try {
             Reader r = new InputStreamReader(new BufferedInputStream(new FileInputStream(args[0])));
-            for (int ch = r.read(); ch != -1; ch = r.read()) {
-                if (Character.isLetterOrDigit(ch)) {
-                    sb.append((char)ch);
-                }
-                else {
-                    String s = sb.toString();
-
-                    if (!s.isEmpty()) {
-                        Integer count = words.get(s);
-                        if (count == null) {
-                            count = new Integer(0);
-                        }
-                        ++count;
-                        words.put(s, count);
+            try {
+                for (int ch = r.read(); ch != -1; ch = r.read()) {
+                    if (Character.isLetterOrDigit(ch)) {
+                        sb.append((char)ch);
                     }
-                    sb = new StringBuilder();
+                    else {
+                        s = sb.toString();
+
+                        if (!s.isEmpty()) {
+                            Integer count = words.get(s);
+                            if (count == null) {
+                                count = new Integer(0);
+                            }
+                            ++count;
+                            words.put(s, count);
+                        }
+                        sb = new StringBuilder();
+                    }
+                }
+                s = sb.toString();
+
+                if (!s.isEmpty()) {
+                    Integer count = words.get(s);
+                    if (count == null) {
+                        count = new Integer(0);
+                    }
+                    ++count;
+                    words.put(s, count);
                 }
             }
+            catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+
             r.close();
             processResults(words);
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -70,8 +88,15 @@ public class Main {
 
         try {
             Writer fw = new FileWriter("res.csv");
-            for (WordCounter wcount: list) {
-                fw.write(wcount.getKey() + "," + wcount.getVal() + "," + (wcount.getVal() / total * 100)+"\n");
+            if (total > 0) {
+                try {
+                    for (WordCounter wcount: list) {
+                        fw.write(wcount.getKey() + "," + wcount.getVal() + "," + (wcount.getVal() / total * 100)+"\n");
+                    }
+                }
+                catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
             }
             fw.close();
         } catch (IOException e) {
