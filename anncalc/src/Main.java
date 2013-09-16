@@ -9,8 +9,8 @@ import java.util.Stack;
 
 public class Main {
     public static void main(String args[]) {
-        Stack<Double> dataStack = new Stack<Double>();
-        HashMap<String, Double> defines = new HashMap<String, Double>();
+        Stack<Double> dataStk = new Stack<Double>();
+        HashMap<String, Double> defs = new HashMap<String, Double>();
 
 
         try {
@@ -27,17 +27,17 @@ public class Main {
                                 if (ann != null) {
                                     try {
                                         if ("Stack".equals(((Resource)ann).type())) {
-                                            field.set(dataStack, dataStack);
+                                            field.set(cmd, dataStk);
                                         }
                                         else if ("Defines".equals(((Resource)ann).type())) {
-                                            field.set(defines, defines);
+                                            field.set(cmd, defs);
                                         }
                                     } catch (IllegalAccessException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }
                                 }
-                                cmd.execute(cmdArgs);
                             }
+                            cmd.execute(cmdArgs);
                         }
                     }
                 }

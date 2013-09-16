@@ -128,7 +128,10 @@ class SqrtCommand implements CalcCommand {
 }
 
 class Commands {
-    {
+
+    private static HashMap<String, CalcCommand> cmds;
+
+    static {
         cmds = new HashMap<String, CalcCommand>();
 
         cmds.put("PUSH", new PushCommand());
@@ -146,8 +149,5 @@ class Commands {
     public static CalcCommand getCmd(String arg) {
         return cmds.get(arg);
     }
-
-    private static HashMap<String, CalcCommand> cmds;
-
 }
 
