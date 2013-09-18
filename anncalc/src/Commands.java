@@ -1,4 +1,10 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Properties;
 import java.util.Stack;
 
 class PushCommand implements CalcCommand {
@@ -144,6 +150,36 @@ class Commands {
         cmds.put("MUL", new MulCommand());
         cmds.put("DIV", new DivCommand());
         cmds.put("SQRT", new SqrtCommand());
+
+        /** read additional commands */
+        Properties props = new Properties();
+        InputStream f = Commands.class.getResourceAsStream("cmd_add.properties");
+        try {
+            props.load(f);
+        } catch (InvalidPropertiesFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                f.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for (Object key: props.keySet()) {
+            String newName = props.getProperty((String)key);
+            try {
+                cmds.put((String)key, (CalcCommand)Class.forName(newName).newInstance());
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     public static CalcCommand getCmd(String arg) {
