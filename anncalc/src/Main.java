@@ -26,10 +26,10 @@ public class Main {
                                 Annotation ann = field.getAnnotation(Resource.class);
                                 if (ann != null) {
                                     try {
-                                        if ("Stack".equals(((Resource)ann).type())) {
+                                        if (ResourceType.STACK.equals(((Resource)ann).value())) {
                                             field.set(cmd, dataStk);
                                         }
-                                        else if ("Defines".equals(((Resource)ann).type())) {
+                                        else if (ResourceType.DEFINES.equals(((Resource)ann).value())) {
                                             field.set(cmd, defs);
                                         }
                                     } catch (IllegalAccessException e) {

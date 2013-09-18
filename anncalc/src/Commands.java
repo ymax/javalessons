@@ -18,9 +18,9 @@ class PushCommand implements CalcCommand {
         }
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
-    @Resource(type = "Defines")
+    @Resource(ResourceType.DEFINES)
     HashMap<String, Double> defines;
 }
 
@@ -32,7 +32,7 @@ class PopCommand implements CalcCommand {
         dataStack.pop();
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
 }
 
@@ -51,7 +51,7 @@ class DefineCommand implements CalcCommand {
         defines.put(args[1], new Double(args[2]));
     }
 
-    @Resource(type = "Defines")
+    @Resource(ResourceType.DEFINES)
     HashMap<String, Double> defines;
 }
 
@@ -63,7 +63,7 @@ class PrintCommand implements CalcCommand {
         System.out.println(dataStack.firstElement());
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
 }
 
@@ -75,7 +75,7 @@ class AddCommand implements CalcCommand {
         dataStack.push(dataStack.pop() + dataStack.pop());
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
 }
 
@@ -87,7 +87,7 @@ class SubCommand implements CalcCommand {
         dataStack.push(-dataStack.pop() + dataStack.pop());
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
 }
 
@@ -99,7 +99,7 @@ class MulCommand implements CalcCommand {
         dataStack.push(dataStack.pop() * dataStack.pop());
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
 }
 
@@ -111,7 +111,7 @@ class DivCommand implements CalcCommand {
         dataStack.push(1 / dataStack.pop() * dataStack.pop());
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
 }
 
@@ -123,7 +123,7 @@ class SqrtCommand implements CalcCommand {
         dataStack.push(Math.sqrt(dataStack.pop()));
     }
 
-    @Resource(type = "Stack")
+    @Resource(ResourceType.STACK)
     Stack<Double> dataStack;
 }
 
