@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class HttpServ {
     HttpServ() {
@@ -16,7 +17,9 @@ public class HttpServ {
     public void run() {
         while (true) {
             try {
-                new ReqProcessor(serverSocket.accept());
+                Socket s = serverSocket.accept();
+                Thread t = new Thread(new ReqProcessor(s));
+                t.start();
 
             } catch (IOException e) {
                 e.printStackTrace();
