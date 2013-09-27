@@ -5,7 +5,7 @@ import java.net.Socket;
 public class HttpServ {
     HttpServ() {
         try {
-            serverSocket = new ServerSocket(8888);
+            serverSocket = new ServerSocket(18888);
             serverSocket.setReuseAddress(true);
         }
         catch (IOException e) {

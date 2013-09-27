@@ -1,13 +1,13 @@
 import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
-import java.net.Socket;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
+import java.security.URIParameter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class ReqProcessor implements Runnable {
 
@@ -36,10 +36,6 @@ public class ReqProcessor implements Runnable {
                     respond(os, 501, "Not Implemented", null, null);
                 }
             }
-            catch (IOException e) {
-                respond(os, 500, "Internal Server Error", "text/html;encoding=UTF-8",
-                        ("<html><title>Error</title><body>" + e.getLocalizedMessage() + "</body></html>").getBytes("UTF-8"));
-            }
             finally {
                 os.close();
                 isr.close();
@@ -57,8 +53,15 @@ public class ReqProcessor implements Runnable {
     }
 
     private void processGet(OutputStream os, String[] args) throws IOException {
+        String s = "";
+        for (String s1: args[1].substring(1).split(Pattern.quote("/"))) {
+            s = s + File.separator + URLDecoder.decode(s1, "UTF-8");
+        }
         String path = URLDecoder.decode(args[1], "ASCII");
-        path = path.replace("/", File.separator);
+        if (s.equals("")) {
+            s = "." + File.separator;
+        }
+        path = s;//path.replace("/", File.separator);
         File f = new File(path);
         if (f.exists()) {
             if (f.isDirectory()) {
@@ -70,7 +73,16 @@ public class ReqProcessor implements Runnable {
                         "<table rules=\"cols\" cellpadding=\"10\">" +
                         "<tr><td><b>Name</b></td><td><b>Modified</b></td><td><b>Size</b></td></tr>");
                 for (String[] finfo: cont) {
-                    sb.append("<tr><td><a href=\"" + URLEncoder.encode(finfo[1].replace(File.separator, "/"), "UTF-8") + "\">" + finfo[0] + "</a></td><td>" + finfo[2] + "</td><td>" + finfo[3] + "</td></tr>");
+//                    String s2 = "";
+                    String[] sx = finfo[1].split(Pattern.quote(File.separator));
+                    String s2 = URLEncoder.encode(sx[0], "UTF-8");
+                    for (int i = 1; i < sx.length; ++i) {
+                        s2 = s2 + "/" + URLEncoder.encode(sx[i], "UTF-8");
+                    }
+//                    for (String s1: finfo[1].split(File.separator)) {
+//                        s2 = s2 + "/" + URLEncoder.encode(s1, "ASCII");
+//                    }
+                    sb.append("<tr><td><a href=\"" + s2/*URLEncoder.encode(finfo[1].replace(File.separator, "/"), "UTF-8")*/ + "\">" + finfo[0] + "</a></td><td>" + finfo[2] + "</td><td>" + finfo[3] + "</td></tr>");
                 }
                 sb.append("</table>" +
                         "</body>" +
