@@ -20,7 +20,8 @@ public class ReqProcessor implements Runnable {
     public void run() {
         try {
             OutputStream os = socket.getOutputStream();
-            InputStreamReader isr = new InputStreamReader(socket.getInputStream());
+            InputStream is = socket.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
             try {
                 BufferedReader br = new BufferedReader(isr);
                 String []args = br.readLine().split(" ");
@@ -29,16 +30,14 @@ public class ReqProcessor implements Runnable {
                 if (cmd.equals("GET")) {
                     processGet(os, args);
                 }
-                else if (cmd.equals("HEAD")) {
-                    processHead(os, args);
-                }
                 else {
-                    respond(os, 501, "Not Implemented", null, null);
+                    respondData(os, 501, "Not Implemented", null, null);
                 }
             }
             finally {
-                os.close();
                 isr.close();
+                os.close();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,21 +52,33 @@ public class ReqProcessor implements Runnable {
     }
 
     private void processGet(OutputStream os, String[] args) throws IOException {
-        String s = "";
-        for (String s1: args[1].substring(1).split(Pattern.quote("/"))) {
-            s = s + File.separator + URLDecoder.decode(s1, "UTF-8");
+        String[] req = args[1].substring(1).split(Pattern.quote("/"));
+        if (args[1].substring(args[1].length() - 1).equals("/")) {
+            String[] req2 = new String[req.length + 1];
+            int i;
+            for (i = 0; i < req.length; ++i) {
+                req2[i] = req[i];
+            }
+            req2[i] = "";
+            req = req2;
+        }
+        String s = URLDecoder.decode(req[0], "UTF-8");
+        for (int i = 1; i < req.length; ++i) {
+            if (i == (req.length - 1) || !req[i].equals("")) {
+                s = s + File.separator + URLDecoder.decode(req[i], "UTF-8");
+            }
         }
         String path = URLDecoder.decode(args[1], "ASCII");
         if (s.equals("")) {
-            s = "." + File.separator;
+            s = new File(".").getCanonicalPath();
         }
         path = s;//path.replace("/", File.separator);
         File f = new File(path);
         if (f.exists()) {
             if (f.isDirectory()) {
-                ArrayList<String[]> cont = contents(f);
+                ArrayList<String[]> cont = dirContents(f);
                 StringBuilder sb = new StringBuilder();
-                sb.append("<html>" +
+                sb.append("<html><meta http-equiv=Content-Type content=\"text/html;charset=UTF-8\">" +
                         "<title>Directory</title>" +
                         "<body>" +
                         "<table rules=\"cols\" cellpadding=\"10\">" +
@@ -75,64 +86,77 @@ public class ReqProcessor implements Runnable {
                 for (String[] finfo: cont) {
 //                    String s2 = "";
                     String[] sx = finfo[1].split(Pattern.quote(File.separator));
-                    String s2 = URLEncoder.encode(sx[0], "UTF-8");
+                    if (finfo[1].substring(finfo[1].length() - 1).equals(File.separator)) {
+                        String[] sx2 = new String[sx.length + 1];
+                        int i;
+                        for (i = 0; i < sx.length; ++i) {
+                            sx2[i] = sx[i];
+                        }
+                        sx2[i] = "";
+                        sx = sx2;
+                    }
+                    String s2 = "/" + URLEncoder.encode(sx[0], "UTF-8");
                     for (int i = 1; i < sx.length; ++i) {
-                        s2 = s2 + "/" + URLEncoder.encode(sx[i], "UTF-8");
+                        if (i == (sx.length - 1) || !sx[i].equals("")) {
+                            s2 = s2 + "/" + URLEncoder.encode(sx[i], "UTF-8");
+                        }
                     }
 //                    for (String s1: finfo[1].split(File.separator)) {
 //                        s2 = s2 + "/" + URLEncoder.encode(s1, "ASCII");
 //                    }
-                    sb.append("<tr><td><a href=\"" + s2/*URLEncoder.encode(finfo[1].replace(File.separator, "/"), "UTF-8")*/ + "\">" + finfo[0] + "</a></td><td>" + finfo[2] + "</td><td>" + finfo[3] + "</td></tr>");
+                    sb.append("<tr><td><a href=\"" + s2 + "\">" + finfo[0] + "</a></td><td>" + finfo[2] + "</td><td>" + finfo[3] + "</td></tr>");
+                    System.out.println(finfo[0]);
                 }
                 sb.append("</table>" +
                         "</body>" +
                         "</html>");
-                respond(os, 200, "OK", "text/html;encoding=UTF-8", sb.toString().getBytes("UTF-8"));
+                respondData(os, 200, "OK", "text/html; charset=utf-8", sb.toString().getBytes("UTF-8"));
             }
             else {
-                respond(os, f);
+                respondFile(os, f);
             }
         }
         else
         {
-            respond(os, 404, "Not Found", null, null);
+            respondData(os, 404, "Not Found", null, null);
         }
     }
 
-    private void processHead(OutputStream os, String[] args) throws IOException {
-        respond(os, 501, "Not Implemented", null, null);
-    }
-
-    private void respond(OutputStream os, int code, String cause, String cont_type, byte[] cont) throws IOException {
-        os.write(("HTTP/1.0 " + code + " " + cause + "\r\n").getBytes("UTF-8"));
+    private void respondData(OutputStream os, int code, String cause, String cont_type, byte[] cont) throws IOException {
+        String resp = "HTTP/1.0 " + code + " " + cause + "\r\n";
         if (cont_type != null && cont.length != 0) {
-            os.write(("Content-Type: " + cont_type + "\r\n").getBytes("UTF-8"));
-            os.write(("Content-Length: " + cont.length + "\r\n").getBytes("UTF-8"));
-            os.write(("Connection: close\r\n").getBytes("UTF-8"));
-            os.write(("Cache-Control: no-cache,no-store\r\n").getBytes("UTF-8"));
-            os.write(("\r\n").getBytes("UTF-8"));
-            os.write(cont);
-            os.flush();
+            resp +=
+                    "Content-Type: " + cont_type + "\r\n" +
+                    "Content-Length: " + cont.length + "\r\n" +
+                    "Connection: close\r\n" +
+                    "Cache-Control: no-cache,no-store\r\n" +
+                    "\r\n";
         }
+        os.write(resp.getBytes("UTF-8"));
+        os.write(cont);
+        os.flush();
     }
 
-    private void respond(OutputStream os, File f) throws IOException {
-        os.write(("HTTP/1.0 200 OK\r\n").getBytes("UTF-8"));
-        os.write(("Content-Type: " + new MimetypesFileTypeMap().getContentType(f) + "\r\n").getBytes("UTF-8"));
-        os.write(("Content-Length: " + f.length() + "\r\n").getBytes("UTF-8"));
-        os.write(("Connection: close\r\n").getBytes("UTF-8"));
-        os.write(("Cache-Control: no-cache,no-store").getBytes("UTF-8"));
-        os.write(("\r\n").getBytes("UTF-8"));
-        byte[] buf = new byte[200];
+    private void respondFile(OutputStream os, File f) throws IOException {
+        String resp =
+                "HTTP/1.0 200 OK\r\n" +
+                "Content-Type: " + new MimetypesFileTypeMap().getContentType(f) + "\r\n" +
+                "Content-Length: " + f.length() + "\r\n" +
+//                "Content-Disposition: attachment; filename=\"" + f.getName() + "\"\r\n" +
+                "Connection: close\r\n" +
+                "Cache-Control: no-cache,no-store\r\n" +
+                "\r\n";
+        os.write(resp.getBytes("UTF-8"));
+        byte[] buf = new byte[1000000];
         FileInputStream fis = new FileInputStream(f);
         int len;
         while((len = fis.read(buf)) != -1) {
-             os.write(buf, 0, len);
+            os.write(buf, 0, len);
         }
         os.flush();
     }
 
-    private ArrayList<String[]> contents(File path) throws IOException {
+    private ArrayList<String[]> dirContents(File path) throws IOException {
         ArrayList<String[]> files = new ArrayList<String[]>();
         ArrayList<String[]> dirs = new ArrayList<String[]>();
         for (File f: path.listFiles()) {
