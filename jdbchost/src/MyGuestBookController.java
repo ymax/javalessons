@@ -20,15 +20,27 @@ class MyGuestBookController implements GuestBookController {
 
     @Override
     public void addRecord(String message) {
+        PreparedStatement ps = null;
         try {
-            connection.createStatement().execute(
+            ps = connection.prepareStatement(
                     "INSERT INTO testTable " +
                     "(ID, postDate, postMessage) " +
-                    "VALUES (" + (idx = idx.add(new BigDecimal(1))) + ", " +
-                    new java.sql.Date(Calendar.getInstance().getTimeInMillis()) + ", " +
-                    message + ")");
+                    "VALUES(?,?,?)");
+            ps.setBigDecimal(1, (idx = idx.add(new BigDecimal(1))));
+            ps.setDate(2, new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
+            ps.setString(3, message);
+            ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
+        }
+        finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
